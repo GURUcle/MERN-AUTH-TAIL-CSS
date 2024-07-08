@@ -13,8 +13,25 @@ const app = express();
 app.use(express.json());
 
 
-app.use('/api/user', userRouter)
-app.use('/api/auth',authRouter)
+app.use('/api/user', userRouter);
+app.use('/api/auth',authRouter);
+
+app.use((err, req, res, next) => {
+const statusCode = err.statusCode || 500;
+const message = err.message || 'Internal Server';
+return res.status(statusCode).json({
+success: false,
+error:message,
+statusCode,
+})
+});
+
+
+
+
+
+
+
 
 // Database connection
 mongoose.connect(process.env.MONGODB_URL, {
@@ -23,10 +40,6 @@ mongoose.connect(process.env.MONGODB_URL, {
 })
 .then(() => console.log('MongoDB connected'))
 .catch(err => console.error('Failed to connect to MongoDB:', err));
-
-
-
-
 
 // Start the server
 const PORT = process.env.PORT || 3000;

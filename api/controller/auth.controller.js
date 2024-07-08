@@ -1,9 +1,10 @@
 import User from "../model/user.model.js";
 import bcrypt from 'bcrypt';
+import { errorHandler } from "../routes/utils/error.js";
 
 const saltRounds = 10;
 
-export const signup = async (req, res) => {
+export const signup = async (req, res, next) => {
     const { username, email, password } = req.body;
 
     try {
@@ -20,12 +21,10 @@ export const signup = async (req, res) => {
 
         // Save the new user to the database
         await newUser.save();
-
         // Send success response
         res.status(201).json({ message: 'User saved successfully' });
     } catch (error) {
         // Handle errors
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        next(error);
     }
 };
